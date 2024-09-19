@@ -6,33 +6,33 @@ import YAML from 'yaml'
 import fetch from 'node-fetch'
 
 export default new class Tools {
-  constructor () {
+  constructor() {
     this._wait = this._wait || {}
     if (this.Cfg.sign) {
       this.connectWebSocket()
     }
   }
 
-  get Cfg () {
-    let file = './plugins/GT-Manual/config.yaml'
+  get Cfg() {
+    let file = './plugins/GT-Manual-Plugin/config.yaml'
     this._cfg = this._cfg || YAML.parse(fs.readFileSync(file, 'utf8'))
     return this._cfg
   }
 
-  get MysApi () {
+  get MysApi() {
     return MysApi
   }
 
-  get MysSign () {
+  get MysSign() {
     return new MysSign()
   }
 
-  connectWebSocket () {
+  connectWebSocket() {
     this.ws = new WebSocket(this.Cfg.signAddr)
     this.ws.on('error', logger.error)
-    this.ws.on('open', () => logger.mark('[GT-Manual] WebSocket已连接'))
+    this.ws.on('open', () => logger.mark('[GT-Manual-Plugin] WebSocket已连接'))
     this.ws.on('close', (code) => {
-      logger.error(`[GT-Manual] WebSocket已断开, code: ${code}`)
+      logger.error(`[GT-Manual-Plugin] WebSocket已断开, code: ${code}`)
       this.ws = null
     })
     this.ws.on('message', (data) => {
@@ -47,7 +47,7 @@ export default new class Tools {
     })
   }
 
-  async doSign (data, id) {
+  async doSign(data, id) {
     let res = {}
     let mysUser = await this.MysUser.create(data.ltuid, true)
     if (mysUser.ck) {
@@ -56,12 +56,12 @@ export default new class Tools {
     this.socketWrite('signStatus', res, id)
   }
 
-  socketWrite (cmd, payload, id) {
+  socketWrite(cmd, payload, id) {
     if (!id || (typeof id == 'number' && String(id).length == 13)) id = +new Date()
     return this.ws.send(JSON.stringify({ id, cmd, payload, key: this._key }))
   }
 
-  socketSend (cmd, payload, id) {
+  socketSend(cmd, payload, id) {
     return new Promise((resolve, reject) => {
       this.socketWrite(cmd, payload, `${id}`)
       this._wait[id] = resolve
@@ -70,7 +70,7 @@ export default new class Tools {
   }
 
   /** 刷新米游社验证 */
-  async bbsVerification (e, mysApi) {
+  async bbsVerification(e, mysApi) {
     let create = await mysApi.getData('createVerification')
     if (!create || create.retcode !== 0) return false
 
@@ -86,7 +86,7 @@ export default new class Tools {
   }
 
   /** 手动验证, 返回validate */
-  async ManualVerify (e, data) {
+  async ManualVerify(e, data) {
     if (!data.gt || !data.challenge || !e?.reply) return false
 
     let res = await fetch(this.Cfg.verifyAddr, {
