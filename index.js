@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 
-const files = fs.readdirSync('./plugins/GT-Manual/apps').filter(file => file.endsWith('.js'))
+const files = fs.readdirSync('./plugins/GT-Manual-Plugin/apps').filter(file => file.endsWith('.js'))
 
 let ret = []
 
