@@ -124,7 +124,7 @@ export class bbsVerification extends plugin {
     let uids = []
     let mysUsers = this.mysUsers[key]
     lodash.forEach(mysUsers, ds => {
-      for (let game of ['gs', 'sr']) {
+      for (let game of ['gs', 'sr', 'zzz']) {
         ds.getUids(game).forEach(uid => uids.push(ds.getUidData(uid, game)))
       }
     })

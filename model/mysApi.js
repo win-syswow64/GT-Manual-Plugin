@@ -9,7 +9,7 @@ export default class MysApi {
    * @param option 其他参数
    * @param option.log 是否显示日志
    */
-  constructor (uid, cookie, option = {}) {
+  constructor(uid, cookie, option = {}) {
     this.uid = uid
     this.cookie = cookie
     this.option = { ...option }
@@ -17,10 +17,10 @@ export default class MysApi {
     this.server = this.getServer()
   }
 
-  urlMap (data) {
+  urlMap(data) {
     let host = 'https://api-takumi.mihoyo.com/'
     let hostRecord = 'https://api-takumi-record.mihoyo.com/'
-    let signActId = { gs: 'e202311201442471', sr: 'e202304121516551' }
+    let signActId = { gs: 'e202311201442471', sr: 'e202304121516551', zzz: "e202406242138391" }
     return {
       createVerification: {
         url: `${hostRecord}game_record/app/card/wapi/createVerification`,
@@ -48,7 +48,7 @@ export default class MysApi {
     }
   }
 
-  getUrl (type, data = {}) {
+  getUrl(type, data = {}) {
     let urlMap = this.urlMap(data)
     if (!urlMap[type]) return false
 
@@ -62,28 +62,34 @@ export default class MysApi {
     return { url, headers, body }
   }
 
-  getServer () {
+  getServer() {
     let uid = this.uid
-    this.isSr = this.game === 'sr'
+    if (this.game === 'zzz') {
+      this.isSr = 2;
+    } else if (this.game === 'sr') {
+      this.isSr = 1;
+    } else {
+      this.isSr = 0;
+    }
     switch (String(uid)[0]) {
       case '1':
       case '2':
-        return this.isSr ? 'prod_gf_cn' : 'cn_gf01' // 官服
+        return this.isSr != 0 ? 'prod_gf_cn' : 'cn_gf01' // 官服
       case '5':
-        return this.isSr ? 'prod_qd_cn' : 'cn_qd01' // B服
+        return this.isSr != 0 ? 'prod_qd_cn' : 'cn_qd01' // B服
       case '6':
-        return this.isSr ? 'prod_official_usa' : 'os_usa' // 美服
+        return this.isSr != 0 ? 'prod_official_usa' : 'os_usa' // 美服
       case '7':
-        return this.isSr ? 'prod_official_euro' : 'os_euro' // 欧服
+        return this.isSr != 0 ? 'prod_official_euro' : 'os_euro' // 欧服
       case '8':
-        return this.isSr ? 'prod_official_asia' : 'os_asia' // 亚服
+        return this.isSr != 0 ? 'prod_official_asia' : 'os_asia' // 亚服
       case '9':
-        return this.isSr ? 'prod_official_cht' : 'os_cht' // 港澳台服
+        return this.isSr != 0 ? 'prod_official_cht' : 'os_cht' // 港澳台服
     }
-    return this.isSr ? 'prod_gf_cn' : 'cn_gf01'
+    return this.isSr != 0 ? 'prod_gf_cn' : 'cn_gf01'
   }
 
-  async getData (type, data = {}) {
+  async getData(type, data = {}) {
     let { url, headers, body } = this.getUrl(type, data)
     if (!url) return false
 
@@ -127,7 +133,7 @@ export default class MysApi {
     return res
   }
 
-  getHeaders (query = '', body = '', sign = false) {
+  getHeaders(query = '', body = '', sign = false) {
     let headers = {
       'x-rpc-device_id': this.option.device_id || this.getGuid(),
       'x-rpc-app_version': '2.40.1',
@@ -139,7 +145,12 @@ export default class MysApi {
       DS: this.getDs(query, body)
     }
     if (sign) {
-      if (!this.isSr) headers['x-rpc-signgame'] = 'hk4e'
+      if (this.isSr == 'gs') {
+        headers['x-rpc-signgame'] = 'hk4e'
+      } else if (this.isSr == 'zzz') {
+        headers['x-rpc-signgame'] = 'zzz'
+      }
+      // if (!this.isSr) headers['x-rpc-signgame'] = 'hk4e'
       headers.Origin = 'https://act.mihoyo.com'
       headers.Referer = 'https://act.mihoyo.com'
       headers.DS = this.getDsSign()
@@ -147,7 +158,7 @@ export default class MysApi {
     return headers
   }
 
-  getDs (q = '', b = '') {
+  getDs(q = '', b = '') {
     let n = 'xV8v4Qu54lUKrEYFZkJhB8cuOh9Asafs'
     let t = Math.round(new Date().getTime() / 1000)
     let r = Math.floor(Math.random() * 900000 + 100000)
@@ -156,7 +167,7 @@ export default class MysApi {
   }
 
   /** 签到ds */
-  getDsSign () {
+  getDsSign() {
     /** @Womsxd */
     const n = 'jEpJb9rRARU2rXDA9qYbZ3selxkuct9a'
     const t = Math.round(new Date().getTime() / 1000)
@@ -165,15 +176,15 @@ export default class MysApi {
     return `${t},${r},${DS}`
   }
 
-  getGuid () {
-    function S4 () {
+  getGuid() {
+    function S4() {
       return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
     }
     return (S4() + S4() + '-' + S4() + '-' + S4() + '-' + S4() + '-' + S4() + S4() + S4())
   }
 
   /* eslint-disable quotes */
-  get device () {
+  get device() {
     if (!this._device) this._device = `${md5(this.uid).substring(0, 5)}`
     return this._device
   }
