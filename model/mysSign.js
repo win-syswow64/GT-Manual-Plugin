@@ -2,9 +2,15 @@ import moment from 'moment'
 import MysApi from './mysApi.js'
 
 export default class MysSign {
-  async doSign (cookie, uidData) {
+  async doSign(cookie, uidData) {
     let { uid, game, validate } = uidData
-    this.prefix = `Yz:${game == 'sr' ? 'starrail' : 'genshin'}:sign:`
+    if (game == 'sr') {
+      this.prefix = `Yz:starrail:sign:`
+    } else if (game == 'zzz') {
+      this.prefix = `Yz:zzz:sign:`
+    } else {
+      this.prefix = `Yz:genshin:sign:`
+    }
     this.mysApi = new MysApi(uid, cookie, { game })
     this.key = `${this.prefix}isSign:${uid}`
     this.uid = uid
@@ -105,12 +111,12 @@ export default class MysSign {
     }
   }
 
-  sleep (ms) {
+  sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms))
   }
 
   // 缓存签到奖励
-  async getReward (signDay) {
+  async getReward(signDay) {
     let key = `${this.prefix}reward`
     let reward = await redis.get(key)
 
@@ -140,7 +146,7 @@ export default class MysSign {
     return reward
   }
 
-  async bbsSign () {
+  async bbsSign() {
     let params = {}
     if (this.validate) {
       params.headers = {
@@ -176,7 +182,7 @@ export default class MysSign {
     return false
   }
 
-  async setCache (day) {
+  async setCache(day) {
     let end = Number(moment().endOf('day').format('X')) - Number(moment().format('X'))
     redis.setEx(this.key, end, String(day))
   }
