@@ -145,9 +145,9 @@ export default class MysApi {
       DS: this.getDs(query, body)
     }
     if (sign) {
-      if (this.isSr == 'gs') {
+      if (this.isSr == '0') {
         headers['x-rpc-signgame'] = 'hk4e'
-      } else if (this.isSr == 'zzz') {
+      } else if (this.isSr == '2') {
         headers['x-rpc-signgame'] = 'zzz'
       }
       // if (!this.isSr) headers['x-rpc-signgame'] = 'hk4e'

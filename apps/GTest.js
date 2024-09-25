@@ -82,7 +82,7 @@ export class bbsVerification extends plugin {
     if (body) body = JSON.stringify(body)
 
     let headers = this.getHeaders(query, body)
-    if (this.isSr) headers['x-rpc-challenge_game'] = '6'
+    if (this.isSr == 1) headers['x-rpc-challenge_game'] = '6'
 
     return { url, headers, body }
   }
