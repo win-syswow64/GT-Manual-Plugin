@@ -19,15 +19,15 @@ export default class MysApi {
 
   urlMap(data) {
     let host = 'https://api-takumi.mihoyo.com/'
-    let hostRecord = 'https://api-takumi-record.mihoyo.com/'
+    // let hostRecord = 'https://api-takumi-record.mihoyo.com/'
     let signActId = { gs: 'e202311201442471', sr: 'e202304121516551', zzz: "e202406242138391" }
     return {
       createVerification: {
-        url: `${hostRecord}game_record/app/card/wapi/createVerification`,
-        query: 'is_high=true'
+        url: `https://bbs-api.miyoushe.com/misc/wapi/createVerification`,
+        query: 'gids=2&is_high=false'
       },
       verifyVerification: {
-        url: `${hostRecord}game_record/app/card/wapi/verifyVerification`,
+        url: `https://bbs-api.miyoushe.com/misc/wapi/verifyVerfication`,
         body: data
       },
       bbs_sign_info: {
