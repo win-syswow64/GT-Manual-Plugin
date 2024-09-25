@@ -66,11 +66,11 @@ export class bbsVerification extends plugin {
     let urlMap = {
       ...this.apiTool.getUrlMap({ ...data, deviceId: this.device }),
       createVerification: {
-        url: 'https://api-takumi-record.mihoyo.com/game_record/app/card/wapi/createVerification',
-        query: 'is_high=true'
+        url: 'https://bbs-api.miyoushe.com/misc/wapi/createVerification',
+        query: 'gids=2&is_high=false'
       },
       verifyVerification: {
-        url: 'https://api-takumi-record.mihoyo.com/game_record/app/card/wapi/verifyVerification',
+        url: 'https://bbs-api.miyoushe.com/misc/wapi/verifyVerfication',
         body: data
       }
     }
@@ -82,7 +82,8 @@ export class bbsVerification extends plugin {
     if (body) body = JSON.stringify(body)
 
     let headers = this.getHeaders(query, body)
-    if (this.isSr == 1) headers['x-rpc-challenge_game'] = '6'
+    // if (this.isSr != 0) headers['x-rpc-challenge_game'] = '6'
+    if (this.isSr) headers['x-rpc-challenge_game'] = '6'
 
     return { url, headers, body }
   }
