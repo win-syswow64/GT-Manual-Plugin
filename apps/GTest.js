@@ -59,7 +59,12 @@ export class bbsVerification extends plugin {
 
     if (options.OnlyGtest) return verify
 
-    return verify ? await mysApi.getData(type, data) : options.res
+    let res_true = await mysApi.getData(type, data)
+
+    if (!res_true || res_true?.retcode == 1034) {
+      return await mysApi.getData(type, data)
+    }
+    return verify ? res_true : options.res
   }
 
   getUrl(type, data = {}) {
@@ -83,7 +88,14 @@ export class bbsVerification extends plugin {
 
     let headers = this.getHeaders(query, body)
     // if (this.isSr != 0) headers['x-rpc-challenge_game'] = '6'
-    if (this.isSr) headers['x-rpc-challenge_game'] = '6'
+    if (this.isSr) {
+      app_key = 'hkrpg_game_record'
+      headers['x-rpc-challenge_game'] = '6'
+    }
+    else if (this.isZzz) {
+      app_key = 'game_record_zzz'
+      headers['x-rpc-challenge_game'] = '8'
+    }
 
     return { url, headers, body }
   }
