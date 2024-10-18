@@ -59,12 +59,7 @@ export class bbsVerification extends plugin {
 
     if (options.OnlyGtest) return verify
 
-    let res_true = await mysApi.getData(type, data)
-
-    if (!res_true || res_true?.retcode == 1034) {
-      return await mysApi.getData(type, data)
-    }
-    return verify ? res_true : options.res
+    return verify ? await mysApi.getData(type, data) : options.res
   }
 
   getUrl(type, data = {}) {
