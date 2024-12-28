@@ -22,6 +22,14 @@ export default class MysApi {
     // let hostRecord = 'https://api-takumi-record.mihoyo.com/'
     let signActId = { gs: 'e202311201442471', sr: 'e202304121516551', zzz: "e202406242138391" }
     return {
+      createGeetest: {
+        url: `${host}event/toolcomsrv/risk/createGeetest`,
+        query: `is_high=true&app_key=${data.app_key}`
+      },
+      verifyGeetest: {
+        url: `${host}event/toolcomsrv/risk/verifyGeetest`,
+        body: data
+      },
       createVerification: {
         url: `https://bbs-api.miyoushe.com/misc/wapi/createVerification`,
         query: 'gids=2&is_high=false'

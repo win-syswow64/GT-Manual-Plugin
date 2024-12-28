@@ -70,14 +70,29 @@ export default new class Tools {
   }
 
   /** 刷新米游社验证 */
-  async bbsVerification(e, mysApi) {
-    let create = await mysApi.getData('createVerification')
+  async bbsVerification(e, mysApi, retcode = 1034) {
+    let { isSr, isZzz } = mysApi
+    let headers = {};
+    let app_key = "";
+    if (isSr) {
+      app_key = 'hkrpg_game_record'
+      headers['x-rpc-challenge_game'] = '6'
+    }
+    else if (isZzz) {
+      app_key = 'game_record_zzz'
+      headers['x-rpc-challenge_game'] = '8'
+    }
+
+    let create = await mysApi.getData(retcode === 10035 ? 'createGeetest' : 'createVerification', { headers, app_key })
+    logger.debug(JSON.stringify(create));
     if (!create || create.retcode !== 0) return false
 
-    let verify = await this.ManualVerify(e, { uid: mysApi.uid, ...create.data })
+    let verify = await this.ManualVerify(e, { uid: mysApi.uid, ...create.data, headers, app_key })
+    logger.debug(JSON.stringify(verify));
     if (!verify) return false
 
-    let submit = await mysApi.getData('verifyVerification', verify)
+    let submit = await mysApi.getData(retcode === 10035 ? 'verifyGeetest' : 'verifyVerification', { ...verify, headers, app_key })
+    logger.debug(JSON.stringify(submit));
     if (!submit || submit.retcode !== 0) return false
 
     e.isVerify = true
